@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!--Description-->
+  
+  <meta name="description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、">
+  
+
+  <!--Author-->
+  
+  <meta name="author" content="longjie">
+  
+
+  <!--Open Graph Title-->
+  
+      <meta property="og:title" content="数据库主从同步与读写分离(上)"/>
+  
+  <!--Open Graph Description-->
+  
+      <meta property="og:description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、" />
+  
+  <!--Open Graph Site Name-->
+  <meta property="og:site_name" content="Bug Maker&#39; Blog"/>
+  <!--Type page-->
+  
+      <meta property="og:type" content="article" />
+  
+  <!--Page Cover-->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- 百度统计 -->
+    <script>
+	var _hmt = _hmt || [];
+	(function() {
+  	var hm = document.createElement("script");
+  	hm.src = "https://hm.baidu.com/hm.js?c0451e16533956173997b85f7a8de666";
+  	var s = document.getElementsByTagName("script")[0]; 
+  	s.parentNode.insertBefore(hm, s);
+	})();
+    </script>
+  <!-- Title -->
+  
+  <title>数据库主从同步与读写分离(上) - Bug Maker&#39; Blog</title>
+
+
+  <link rel="shortcut icon" href="/images/logo.ico">
+    <!--font-awesome-->
+  <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Custom CSS/Sass -->
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <header class="site-header">
+  <div class="header-inside">
+    
+    <div class="logo">
+      <a href="/" rel="home">
+        
+        <img src="http://pa3mctxwu.bkt.clouddn.com/ico.jpg" alt="Bug Maker' Blog" height="60">
+        
+      </a>
+    </div>
+    <a class="header-name" href="/">
+          <span>Bug Maker' Blog</span>
+        </a>
+    <!-- navbar -->
+    <nav class="navbar">
+      <!--  nav links -->
+      <div class="collapse">
+        <ul class="navbar-nav">
+          
+          
+            <li>
+              <a href="/.">
+                
+                  <i class="fa fa-home "></i>
+                
+                首页
+              </a>
+            </li>
+          
+            <li>
+              <a href="/archives">
+                
+                  <i class="fa fa-archive "></i>
+                
+                归档
+              </a>
+            </li>
+          
+            <li>
+              <a href="/about">
+                
+                  <i class="fa fa-user "></i>
+                
+                关于
+              </a>
+            </li>
+          
+            <li>
+              <a href="/project">
+                
+                  <i class="fa fa-folder-open "></i>
+                
+                项目
+              </a>
+            </li>
+          
+            <li>
+              <a href="/photo">
+                
+                  <i class="fa fa-photo "></i>
+                
+                相册
+              </a>
+            </li>
+          
+            <li>
+              <a href="/guestbook">
+                
+                  <i class="fa fa-edit "></i>
+                
+                留言
+              </a>
+            </li>
+          
+            <li>
+              <a href="/atom.xml">
+                
+                  <i class="fa fa-send "></i>
+                
+                RSS
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+    <div class="button-wrap">
+      <button class="menu-toggle">Primary Menu</button>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="content-area">
+  <div class="post">
+    <!-- Post Content -->
+    <div class="container">
+      <article>
+        <!-- Title date & tags -->
+        <div class="post-header">
+          <h1 class="entry-title">
+            数据库主从同步与读写分离(上)
+            
+          </h1>
+         
+        </div>
+		 <p class="a-posted-on">
+			Bug Maker
+         </p>
+         <p class="a-posted-on">
+			2018-07-14
+         </p>
+        <!-- Post Main Content -->
+        <div class="entry-content">
+          <p><img src="http://pa3mctxwu.bkt.clouddn.com/cover.PNG" alt="image"><br><a id="more"></a><br>之前在开发中遇到要切换数据源的问题，后来自己解决切换数据源问题后便没有对其拓展。前天看了篇关于并发的博客后，想通过现有掌握的知识去实现一个数据读写分离的demo。本文先讲数据库主从同步，下一篇在演示读写分离（读写分离在于<strong>数据源的切换</strong>，而我之前写过一篇关于数据源切换的文章，有兴趣的TX可以了解一下）；要实现数据库读写分离，就必须<strong>保证数据的一致性</strong>。</p>
+<p>关于数据库主从同步与读写分离,我的<strong>思路</strong>是这样：<br>在业务代码中如果要进行数据插入、删除、更新，则通过切面拦截后切换数据源到主库进行操作，如果要进行查询，则通过切面拦截后切换数据源到从库。与此同时，在主库发生数据操作后，从库及时对其本地的数据进行更新。如下图所示：</p>
+<p><img src="http://pa3mctxwu.bkt.clouddn.com/blog6/master-slave.3.PNG" alt="image"></p>
+<p>主数据库部署在腾讯云上的服务器,从数据库部署在阿里云上的服务器(by_the_way，腾讯云和阿里云都有学生机,一个月不用花费10块钱),两台服务器通过公网ip进行通信(PS：如果想要在本地直接操纵远程数据库,需要设置mysql允许进行远程连接,如下所示)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root#@dragonjack ~]#mysql -u root -p</span><br><span class="line">Enter password:</span><br><span class="line">mysql&gt;update user set host = &apos;%&apos; where user = &apos;root&apos;;</span><br><span class="line">mysql&gt;flush privileges;</span><br></pre></td></tr></table></figure>
+<p>本文默认大家已经懂得在linux环境下安装mysql，并了解mysql的相关配置文件</p>
+<h2 id="转入正题"><a href="#转入正题" class="headerlink" title="转入正题"></a>转入正题</h2><h6 id="本文阅读目录"><a href="#本文阅读目录" class="headerlink" title="本文阅读目录:"></a>本文阅读目录:</h6><p>1、主数据库配置<br>2、从数据库配置<br>3、主从数据库关联<br>4、检查成果<br>5、过程中遇到的问题</p>
+<h3 id="一、主数据库配置"><a href="#一、主数据库配置" class="headerlink" title="一、主数据库配置"></a>一、主数据库配置</h3><h5 id="1-打开主数据库配置文件–-gt-my-cnf"><a href="#1-打开主数据库配置文件–-gt-my-cnf" class="headerlink" title="(1)打开主数据库配置文件–&gt;my.cnf"></a>(1)打开主数据库配置文件–&gt;my.cnf</h5><p>在my.cnf中添加配置,如图:<br><img src="http://pa3mctxwu.bkt.clouddn.com/blog6/master-setting.jpg" alt="image"></p>
+<h5 id="2-启动主数据库-检查配置是否成功"><a href="#2-启动主数据库-检查配置是否成功" class="headerlink" title="(2)启动主数据库,检查配置是否成功"></a>(2)启动主数据库,检查配置是否成功</h5><p>在执行语句”show master status”之后,若能查找到File–&gt;master-bin.000001,则表明配置成功<br><img src="http://pa3mctxwu.bkt.clouddn.com/blog6/master-setting-check.png" alt="image"></p>
+<h3 id="二、从数据库配置"><a href="#二、从数据库配置" class="headerlink" title="二、从数据库配置"></a>二、从数据库配置</h3><h5 id="1-打开从数据库配置文件–-gt-my-cnf"><a href="#1-打开从数据库配置文件–-gt-my-cnf" class="headerlink" title="(1)打开从数据库配置文件–&gt;my.cnf"></a>(1)打开从数据库配置文件–&gt;my.cnf</h5><p>在my.cnf中添加配置,如图所示（注意：server-id可以为任意,但不能与主数据库一样)<br><img src="http://pa3mctxwu.bkt.clouddn.com/blog6/slave-setting.png" alt="image"></p>
+<h5 id="2-启动从数据库"><a href="#2-启动从数据库" class="headerlink" title="(2)启动从数据库"></a>(2)启动从数据库</h5><h3 id="三、主从数据库关联"><a href="#三、主从数据库关联" class="headerlink" title="三、主从数据库关联"></a>三、主从数据库关联</h3><h5 id="1-在主数据库创建”主从同步的数据库用户”"><a href="#1-在主数据库创建”主从同步的数据库用户”" class="headerlink" title="(1)在主数据库创建”主从同步的数据库用户”"></a>(1)在主数据库创建”主从同步的数据库用户”</h5><p>在主库中执行下列查询语句</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#创建数据库用户son,密码为123456,其登录ip为47.106.198.247,</span><br><span class="line">#并赋予它对所有表的REPLICATION SLAVE权限(*.*表示对主库所有表拥有权限)</span><br><span class="line">mysql&gt; create user son;</span><br><span class="line">mysql&gt; grant replication slave on *.* TO 'son'@'47.106.198.247' identified by '123456';</span><br><span class="line">#flush privileges 命令的作用是将当前user和privilige表中的用户信息/权限设置</span><br><span class="line">#从mysql库(MySQL数据库的内置库)中提取到内存里。MySQL用户数据和权限有修改后，</span><br><span class="line">#希望在"不重启MySQL服务"的情况下直接生效时,可以执行该语句</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
+<h5 id="2-从库关联主库"><a href="#2-从库关联主库" class="headerlink" title="(2)从库关联主库"></a>(2)从库关联主库</h5><p>在从库中执行下列查询语句,其中MASTER_HOST的值为主库的ip地址<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; change master to </span><br><span class="line">MASTER_HOST='119.29.77.147',</span><br><span class="line">MASTER_PORT=3306,MASTER_USER='son',</span><br><span class="line">MASTER_PASSWORD='123456',</span><br><span class="line">MASTER_LOG_FILE='master-bin.000001',</span><br><span class="line">MASTER_LOG_POS=0;</span><br></pre></td></tr></table></figure></p>
+<h5 id="3-启动主从同步"><a href="#3-启动主从同步" class="headerlink" title="(3)启动主从同步"></a>(3)启动主从同步</h5><p>在从库中执行下面查询语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; start slave;</span><br></pre></td></tr></table></figure>
+<p>顺便提一下,关闭主从同步的查询语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; stop slave;</span><br></pre></td></tr></table></figure>
+<h5 id="4-查看同步状态"><a href="#4-查看同步状态" class="headerlink" title="(4)查看同步状态"></a>(4)查看同步状态</h5><p>在从库执行下面查询语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status \G;</span><br></pre></td></tr></table></figure>
+<p><img src="http://pa3mctxwu.bkt.clouddn.com/blog6/show-status.png" alt="image"></p>
+<h3 id="四、检查成果"><a href="#四、检查成果" class="headerlink" title="四、检查成果"></a>四、检查成果</h3><h5 id="1-在主库中的demo库中的person表中插入记录"><a href="#1-在主库中的demo库中的person表中插入记录" class="headerlink" title="(1)在主库中的demo库中的person表中插入记录"></a>(1)在主库中的demo库中的person表中插入记录</h5><p><img src="http://pa3mctxwu.bkt.clouddn.com/master-insert.png" alt="image"></p>
+<h5 id="2-在从库中的demo库中的person表中查看记录"><a href="#2-在从库中的demo库中的person表中查看记录" class="headerlink" title="(2)在从库中的demo库中的person表中查看记录"></a>(2)在从库中的demo库中的person表中查看记录</h5><p>在主库插入数据后，从库不进行数据的插入，直接进行查询，可以看到如下的结果<br><img src="http://pa3mctxwu.bkt.clouddn.com/blog6/slave-select.png" alt="image"></p>
+<h3 id="五、过程中遇到的问题及解决方法"><a href="#五、过程中遇到的问题及解决方法" class="headerlink" title="五、过程中遇到的问题及解决方法"></a>五、过程中遇到的问题及解决方法</h3><h5 id="1-在使用msyql-uroot-p命令连接数据库时-如果出现”-bash-mysql-command-not-found”的提示-如下所示"><a href="#1-在使用msyql-uroot-p命令连接数据库时-如果出现”-bash-mysql-command-not-found”的提示-如下所示" class="headerlink" title="(1)在使用msyql -uroot -p命令连接数据库时,如果出现”-bash: mysql :command not found”的提示,如下所示:"></a>(1)在使用msyql -uroot -p命令连接数据库时,如果出现”-bash: mysql :command not found”的提示,如下所示:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root#@dragonjack ~]# mysql -uroot -p</span><br><span class="line">-bash :mysql: command not found</span><br></pre></td></tr></table></figure>
+<p><strong>解决方法:</strong> 不要慌! 不要慌! 不要慌!<br>由于系统默认会查找/usr/bin目录下的命令,如果这个命令不在这个目录下,则无法找到命令,就会出现上述问题,这个时候就需要映射一个链接到/usr/bin目录下,相当于建立一个链接文件.<br>首先我们需要知道mysql命令或者mysqladmin命令的完整路径,比如mysql的路径是:/usr/local/mysql/bin/mysql,则我们执行如下命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root#@dragonjack ~]# ln -s /usr/local/mysql/bin/mysql /usr/bin</span><br></pre></td></tr></table></figure>
+<p>执行上述命令后,就建立了软链接,即可以解决mysql Command not found的问题</p>
+<h5 id="2-启动mysql出现如下异常"><a href="#2-启动mysql出现如下异常" class="headerlink" title="(2)启动mysql出现如下异常:"></a>(2)启动mysql出现如下异常:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root#@dragonjack ~]# mysqladmin -uroot -p start</span><br><span class="line">Enter password:</span><br><span class="line">mysqladmin: connect to server at &apos;localhost&apos; failed</span><br><span class="line">error: &apos;Can&apos;t connect to local Mysql server through socket &apos;/tmp/mysql.sock&apos;(2) &apos;</span><br><span class="line">Check that mysqld is running and that the socket: &apos;/tmp/mysql.socket&apos; exists!</span><br></pre></td></tr></table></figure>
+<p><strong>解决办法:</strong> 在/etc/init.d下有个连接启动脚本msyqld,我们启动时可以使用它，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root#@dragonjack /]# cd etc/init.d</span><br><span class="line">[root#@dragonjack init.d]# service mysqld start</span><br></pre></td></tr></table></figure>
+<p>启动成功后,我们去tmp目录下可以看到mysql.sock文件生成了,我们也可以正常连接到数据库。</p>
+<h5 id="感谢大家看我装B-此致敬礼！有什么不足的地方还请大家不吝赐教！"><a href="#感谢大家看我装B-此致敬礼！有什么不足的地方还请大家不吝赐教！" class="headerlink" title="感谢大家看我装B,此致敬礼！有什么不足的地方还请大家不吝赐教！"></a>感谢大家看我装B,此致敬礼！有什么不足的地方还请大家不吝赐教！</h5>
+        </div>
+      </article>
+    </div>
+    <!-- Pre or Next -->
+    
+	<div class="container" >
+           <ul class="pager">
+    	     
+      	     <li class="previous">
+              <a href="/2018/09/19/blog8/" rel="prev">下一篇</a>
+             </li>
+           
+           
+              <li class="next">
+              <a href="/2018/06/16/blog5/" rel="prev">上一篇</a>
+            </li>
+           
+          </ul>
+       </div>
+　　　　<!-- Comments -->
+    <div class="container">
+      
+<section id="comment">
+  <!-- <h1 class="title">留言</h1> -->
+
+  
+</section>
+
+
+    </div>
+   
+　　　　
+  </div>
+</div>
+
+
+  <!-- Footer -->
+  <!-- Footer -->
+<footer class="site-info">
+  <p>
+    <span>Bug Maker' Blog &copy; 2018 - 2018</span>
+  </p>
+  <p>
+	 
+      <span>Powered by <a href="https://hexo.io/">Hexo</a> with Theme believe</span>
+    
+  </p>
+  <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  <!-- 本站访客数<span id="busuanzi_value_site_uv"></span>人次 -->
+</footer>
+
+
+  <!-- After footer scripts -->
+  <!-- scripts -->
+<script src="/js/app.js"></script>
+
+
+
+</body>
+
+</html>

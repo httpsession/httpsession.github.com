@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!--Description-->
+  
+  <meta name="description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、">
+  
+
+  <!--Author-->
+  
+  <meta name="author" content="longjie">
+  
+
+  <!--Open Graph Title-->
+  
+      <meta property="og:title" content="系统上线测试初入坑"/>
+  
+  <!--Open Graph Description-->
+  
+      <meta property="og:description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、" />
+  
+  <!--Open Graph Site Name-->
+  <meta property="og:site_name" content="Bug Maker&#39; Blog"/>
+  <!--Type page-->
+  
+      <meta property="og:type" content="article" />
+  
+  <!--Page Cover-->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- 百度统计 -->
+    <script>
+	var _hmt = _hmt || [];
+	(function() {
+  	var hm = document.createElement("script");
+  	hm.src = "https://hm.baidu.com/hm.js?c0451e16533956173997b85f7a8de666";
+  	var s = document.getElementsByTagName("script")[0]; 
+  	s.parentNode.insertBefore(hm, s);
+	})();
+    </script>
+  <!-- Title -->
+  
+  <title>系统上线测试初入坑 - Bug Maker&#39; Blog</title>
+
+
+  <link rel="shortcut icon" href="/images/logo.ico">
+    <!--font-awesome-->
+  <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Custom CSS/Sass -->
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <header class="site-header">
+  <div class="header-inside">
+    
+    <div class="logo">
+      <a href="/" rel="home">
+        
+        <img src="http://pa3mctxwu.bkt.clouddn.com/ico.jpg" alt="Bug Maker' Blog" height="60">
+        
+      </a>
+    </div>
+    <a class="header-name" href="/">
+          <span>Bug Maker' Blog</span>
+        </a>
+    <!-- navbar -->
+    <nav class="navbar">
+      <!--  nav links -->
+      <div class="collapse">
+        <ul class="navbar-nav">
+          
+          
+            <li>
+              <a href="/.">
+                
+                  <i class="fa fa-home "></i>
+                
+                首页
+              </a>
+            </li>
+          
+            <li>
+              <a href="/archives">
+                
+                  <i class="fa fa-archive "></i>
+                
+                归档
+              </a>
+            </li>
+          
+            <li>
+              <a href="/about">
+                
+                  <i class="fa fa-user "></i>
+                
+                关于
+              </a>
+            </li>
+          
+            <li>
+              <a href="/project">
+                
+                  <i class="fa fa-folder-open "></i>
+                
+                项目
+              </a>
+            </li>
+          
+            <li>
+              <a href="/photo">
+                
+                  <i class="fa fa-photo "></i>
+                
+                相册
+              </a>
+            </li>
+          
+            <li>
+              <a href="/guestbook">
+                
+                  <i class="fa fa-edit "></i>
+                
+                留言
+              </a>
+            </li>
+          
+            <li>
+              <a href="/atom.xml">
+                
+                  <i class="fa fa-send "></i>
+                
+                RSS
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+    <div class="button-wrap">
+      <button class="menu-toggle">Primary Menu</button>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="content-area">
+  <div class="post">
+    <!-- Post Content -->
+    <div class="container">
+      <article>
+        <!-- Title date & tags -->
+        <div class="post-header">
+          <h1 class="entry-title">
+            系统上线测试初入坑
+            
+          </h1>
+         
+        </div>
+		 <p class="a-posted-on">
+			Bug Maker
+         </p>
+         <p class="a-posted-on">
+			2018-06-16
+         </p>
+        <!-- Post Main Content -->
+        <div class="entry-content">
+          <p><img src="http://pa3mctxwu.bkt.clouddn.com//blog5/pic1.jpg" alt="Markdown"><br><a id="more"></a></p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>把应用开发完之后,将系统部署到测试环境;配置均为实际生产环境;其中代码中请求云之家API用到了定时任务，有一个定时任务为每月一号凌晨执行，在测试的时候便把服务器时间改为2018-06-30 23:58:55，然后很诡异的是请求云之家API一直出现异常,在获取云之家AccessToken一直抛出异常,更痛苦的是API只说请求失败，没有说明失败原因。把代码和配置捋了一遍，发现并没有什么不妥,足足用了一个小时找问题，问题出在<strong>服务器时间</strong>上，因为在请求云之家API时需要带上时间戳，而时间戳是根据系统时间生成的，云之家校验我们请求带过去的时间戳，发现时间是无效的，所以一直返回请求失败。这次入坑，真心觉得测试需要足够的耐心和缜密的逻辑，自己需要出色地完成任务还需要多加历练，吃一堑长一智。</p>
+<hr>
+<h4 id="扯淡"><a href="#扯淡" class="headerlink" title="扯淡"></a>扯淡</h4><p>最近主要在给珠光弄移动审批系统集成开发，珠光一直是用用友的OA系统，由于用友之前给他们做的系统只适用于PC端，现在他们想把用友的系统抛弃，改用明源和金蝶的OA系统，我们金蝶负责开发珠光的单据的<strong>移动</strong>审批。</p>
+<hr>
+<p>下文所说的&lt;珠光OA系统&gt;是指<strong>现在到过渡期</strong>使用的&lt;用友&gt;开发的旧OA系统，<strong>后期</strong>为&lt;明源&gt;开发的新OA系统；&lt;本地应用&gt;为我们开发的系统</p>
+<hr>
+<p>我们只负责<strong>移动端</strong>审批开发，这里需要说一下，待办单据不单单在我们开发的移动端上审批，还可以通过珠光OA系统进行审批。<br>我们工作是将珠光OA系统中待办单据以待办消息的形式推送到云之家上，但是珠光OA系统如果有新的待办单据或新的已办单据不会通知我们，我们只能通过定时任务不断轮询获取数据,并将数据保存到本地,然后向云之家推送待办消息，同时将我们本地的已办单据与珠光OA系统中的已办单据列表进行比对，如果发现我们本地某条待办单据出现在珠光OA系统的已办单据列表中（出现这种情况的原因只有一个，该待办在珠光OA系统上已经完成审批），我们则需要将云之家推送的待办消息转为已办消息。当用户在移动端提交审批时，本地应用后台请求珠光OA系统接口，如果审批成功，则请求云之家接口，将待办消息转为已办消息，如果状态转换成功，则将本地待办转为已办。注意，<strong>用户查看单据是通过阅读云之家的待办消息</strong>。</p>
+<h6 id="为了下文描述方便，在这里作一下定义："><a href="#为了下文描述方便，在这里作一下定义：" class="headerlink" title="为了下文描述方便，在这里作一下定义："></a>为了下文描述方便，在这里作一下定义：</h6><table>
+<thead>
+<tr>
+<th>简称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td>我们负责开发应用后台</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>珠光OA系统</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>云之家，金蝶的OA产品</td>
+</tr>
+<tr>
+<td><strong>UI</strong></td>
+<td>我们开发的用户端</td>
+</tr>
+<tr>
+<td><strong>DA1</strong></td>
+<td>本地应用系统的待办单据</td>
+</tr>
+<tr>
+<td><strong>DA2</strong></td>
+<td>本地应用系统的已办单据</td>
+</tr>
+<tr>
+<td><strong>DB1</strong></td>
+<td>珠光OA系统的待办单据 </td>
+</tr>
+<tr>
+<td><strong>DB2</strong></td>
+<td>珠光OA系统的已办单据</td>
+</tr>
+<tr>
+<td><strong>MSG1</strong></td>
+<td>云之家的待办消息</td>
+</tr>
+<tr>
+<td><strong>MSG2</strong></td>
+<td>云之家的已办消息</td>
+</tr>
+</tbody>
+</table>
+<h3 id="云之家消息处理"><a href="#云之家消息处理" class="headerlink" title="云之家消息处理"></a>云之家消息处理</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">A-&gt;&gt;B: 请求获取DB1</span><br><span class="line">B-&gt;&gt;A: 返回DB1</span><br><span class="line">A-&gt;&gt;A: DA1与DB1比对,过滤已推送的DB1</span><br><span class="line">A-&gt;&gt;C: 推送过滤后的DB1</span><br><span class="line">A-&gt;&gt;B: 请求获取DB2</span><br><span class="line">B-&gt;&gt;A: 返回DB2</span><br><span class="line">A-&gt;&gt;A: DA1与DB2比对,筛选DA1</span><br><span class="line">A-&gt;&gt;C: 请求MSG1转换为MSG2</span><br><span class="line">C-&gt;&gt;A:状态转换成功</span><br><span class="line">A-&gt;&gt;A:DA1转为DA2</span><br></pre></td></tr></table></figure>
+<h3 id="待办单据审批"><a href="#待办单据审批" class="headerlink" title="待办单据审批"></a>待办单据审批</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">UI-&gt;&gt;A: 请求审批</span><br><span class="line">A-&gt;&gt;B: 请求DB1转为DB2</span><br><span class="line">B-&gt;&gt;A:状态转换成功</span><br><span class="line">A-&gt;&gt;C:请求MSG1转为MSG2</span><br><span class="line">C-&gt;&gt;A:状态转换成功</span><br><span class="line">A-&gt;&gt;A:DA1转为DA2</span><br><span class="line">A-&gt;&gt;UI:返回审批结果</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="结言"><a href="#结言" class="headerlink" title="结言"></a>结言</h3><p>审批本身逻辑不复杂，但是在上述中所述的情况下，需要保持多个平台数据的一致性，就需要定时从珠光OA系统中同步数据，在同步完数据之后根据情况向多个平台进行相关操作<br>，由于审批仅限于公司成员，所以谈不上并发，加上对单据生成与云之家消息推送的时间间隔要求不高，通过定时任务进行实现是没有问题的。</p>
+
+        </div>
+      </article>
+    </div>
+    <!-- Pre or Next -->
+    
+	<div class="container" >
+           <ul class="pager">
+    	     
+      	     <li class="previous">
+              <a href="/2018/07/14/blog6/" rel="prev">下一篇</a>
+             </li>
+           
+           
+              <li class="next">
+              <a href="/2018/06/11/blog4/" rel="prev">上一篇</a>
+            </li>
+           
+          </ul>
+       </div>
+　　　　<!-- Comments -->
+    <div class="container">
+      
+<section id="comment">
+  <!-- <h1 class="title">留言</h1> -->
+
+  
+</section>
+
+
+    </div>
+   
+　　　　
+  </div>
+</div>
+
+
+  <!-- Footer -->
+  <!-- Footer -->
+<footer class="site-info">
+  <p>
+    <span>Bug Maker' Blog &copy; 2018 - 2018</span>
+  </p>
+  <p>
+	 
+      <span>Powered by <a href="https://hexo.io/">Hexo</a> with Theme believe</span>
+    
+  </p>
+  <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  <!-- 本站访客数<span id="busuanzi_value_site_uv"></span>人次 -->
+</footer>
+
+
+  <!-- After footer scripts -->
+  <!-- scripts -->
+<script src="/js/app.js"></script>
+
+
+
+</body>
+
+</html>

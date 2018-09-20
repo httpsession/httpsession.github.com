@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!--Description-->
+  
+  <meta name="description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、">
+  
+
+  <!--Author-->
+  
+  <meta name="author" content="longjie">
+  
+
+  <!--Open Graph Title-->
+  
+      <meta property="og:title" content="Spring整合多数据源"/>
+  
+  <!--Open Graph Description-->
+  
+      <meta property="og:description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、" />
+  
+  <!--Open Graph Site Name-->
+  <meta property="og:site_name" content="Bug Maker&#39; Blog"/>
+  <!--Type page-->
+  
+      <meta property="og:type" content="article" />
+  
+  <!--Page Cover-->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- 百度统计 -->
+    <script>
+	var _hmt = _hmt || [];
+	(function() {
+  	var hm = document.createElement("script");
+  	hm.src = "https://hm.baidu.com/hm.js?c0451e16533956173997b85f7a8de666";
+  	var s = document.getElementsByTagName("script")[0]; 
+  	s.parentNode.insertBefore(hm, s);
+	})();
+    </script>
+  <!-- Title -->
+  
+  <title>Spring整合多数据源 - Bug Maker&#39; Blog</title>
+
+
+  <link rel="shortcut icon" href="/images/logo.ico">
+    <!--font-awesome-->
+  <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Custom CSS/Sass -->
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <header class="site-header">
+  <div class="header-inside">
+    
+    <div class="logo">
+      <a href="/" rel="home">
+        
+        <img src="http://pa3mctxwu.bkt.clouddn.com/ico.jpg" alt="Bug Maker' Blog" height="60">
+        
+      </a>
+    </div>
+    <a class="header-name" href="/">
+          <span>Bug Maker' Blog</span>
+        </a>
+    <!-- navbar -->
+    <nav class="navbar">
+      <!--  nav links -->
+      <div class="collapse">
+        <ul class="navbar-nav">
+          
+          
+            <li>
+              <a href="/.">
+                
+                  <i class="fa fa-home "></i>
+                
+                首页
+              </a>
+            </li>
+          
+            <li>
+              <a href="/archives">
+                
+                  <i class="fa fa-archive "></i>
+                
+                归档
+              </a>
+            </li>
+          
+            <li>
+              <a href="/about">
+                
+                  <i class="fa fa-user "></i>
+                
+                关于
+              </a>
+            </li>
+          
+            <li>
+              <a href="/project">
+                
+                  <i class="fa fa-folder-open "></i>
+                
+                项目
+              </a>
+            </li>
+          
+            <li>
+              <a href="/photo">
+                
+                  <i class="fa fa-photo "></i>
+                
+                相册
+              </a>
+            </li>
+          
+            <li>
+              <a href="/guestbook">
+                
+                  <i class="fa fa-edit "></i>
+                
+                留言
+              </a>
+            </li>
+          
+            <li>
+              <a href="/atom.xml">
+                
+                  <i class="fa fa-send "></i>
+                
+                RSS
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+    <div class="button-wrap">
+      <button class="menu-toggle">Primary Menu</button>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="content-area">
+  <div class="post">
+    <!-- Post Content -->
+    <div class="container">
+      <article>
+        <!-- Title date & tags -->
+        <div class="post-header">
+          <h1 class="entry-title">
+            Spring整合多数据源
+            
+          </h1>
+         
+        </div>
+		 <p class="a-posted-on">
+			Bug Maker
+         </p>
+         <p class="a-posted-on">
+			2018-05-26
+         </p>
+        <!-- Post Main Content -->
+        <div class="entry-content">
+          <p><img src="http://pa3mctxwu.bkt.clouddn.com/sql2.jpg" alt="Markdown"><br><a id="more"></a></p>
+<h1 id="一、导读"><a href="#一、导读" class="headerlink" title="一、导读:"></a>一、导读:</h1><p>在最近在SSM项目中碰到要使用多数据源的情况，应用需要向oracle和mysql中操纵数据,之前做的项目几乎都是从单个库中操作数据，这种情况还未接触,查找资料后动手一番,并进行了测试。<br>该方法是在dao层对用户将要使用的数据源倾向进行拦截判断，以此来达到切换数据源的目的，进而实现在一个项目中使用多数据源。<br>下文的处理方式需要读者了解spring数据源和AOP的配置。值得一提的是，刚开始我是在service层添加数据源注解，在单元测试过程中能够成功操纵多个数据源，但是将单元测试的逻辑代码放到controller层后，却无法切换数据源。后来将改为在dao层添加数据源注解，单元测试和在controller均能成功操纵数据，具体原因正在查找，后期更新。</p>
+<h1 id="二、详讲目录："><a href="#二、详讲目录：" class="headerlink" title="二、详讲目录："></a>二、详讲目录：</h1><ul>
+<li>添加数据库配置</li>
+<li>导入数据源</li>
+<li>创建切换数据源需要的工具</li>
+<li>配置切面拦截</li>
+</ul>
+<h1 id="三、详讲："><a href="#三、详讲：" class="headerlink" title="三、详讲："></a>三、详讲：</h1><p>(1）添加数据库配置（jdbc.properties）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">oracle.jdbc.driverClassName=oracle.jdbc.driver.OracleDriver</span><br><span class="line">oracle.jdbc.url=jdbc:oracle:thin:@localhost:1521:mytest</span><br><span class="line">oracle.jdbc.username=testAcc</span><br><span class="line">oracle.jdbc.password=123456pass</span><br><span class="line"></span><br><span class="line">mysql.jdbc.driverClassName=com.mysql.jdbc.Driver</span><br><span class="line">mysql.jdbc.url=jdbc:mysql://localhost:3306/vehiclemanagement?characterEncoding=UTF-8&amp;allowMultiQueries=true</span><br><span class="line">mysql.jdbc.username=root</span><br><span class="line">mysql.jdbc.password=123456</span><br></pre></td></tr></table></figure></p>
+<p>(2)导入数据源(mybatis-config.xml)<br>a. 导入数据源配置<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 数据源1 oracle --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dataSource1"</span> <span class="attr">class</span>=<span class="string">"com.mchange.v2.c3p0.ComboPooledDataSource"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"driverClass"</span> <span class="attr">value</span>=<span class="string">"$&#123;oracle.jdbc.driverClassName&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"jdbcUrl"</span> <span class="attr">value</span>=<span class="string">"$&#123;oracle.jdbc.url&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"user"</span> <span class="attr">value</span>=<span class="string">"$&#123;oracle.jdbc.username&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"password"</span> <span class="attr">value</span>=<span class="string">"$&#123;oracle.jdbc.password&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"autoCommitOnClose"</span> <span class="attr">value</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"checkoutTimeout"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.checkoutTimeout&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"initialPoolSize"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.minPoolSize&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"minPoolSize"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.minPoolSize&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxPoolSize"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.maxPoolSize&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxIdleTime"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.maxIdleTime&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"acquireIncrement"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.acquireIncrement&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxIdleTimeExcessConnections"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.maxIdleTimeExcessConnections&#125;"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 数据源2 mysql --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dataSource2"</span> <span class="attr">class</span>=<span class="string">"com.mchange.v2.c3p0.ComboPooledDataSource"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"driverClass"</span> <span class="attr">value</span>=<span class="string">"$&#123;mysql.jdbc.driverClassName&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"jdbcUrl"</span> <span class="attr">value</span>=<span class="string">"$&#123;mysql.jdbc.url&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"user"</span> <span class="attr">value</span>=<span class="string">"$&#123;mysql.jdbc.username&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"password"</span> <span class="attr">value</span>=<span class="string">"$&#123;mysql.jdbc.password&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"autoCommitOnClose"</span> <span class="attr">value</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"checkoutTimeout"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.checkoutTimeout&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"initialPoolSize"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.minPoolSize&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"minPoolSize"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.minPoolSize&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxPoolSize"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.maxPoolSize&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxIdleTime"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.maxIdleTime&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"acquireIncrement"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.acquireIncrement&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxIdleTimeExcessConnections"</span> <span class="attr">value</span>=<span class="string">"$&#123;cpool.maxIdleTimeExcessConnections&#125;"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>b. spring与mybatis管理数据源<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dataSource"</span> <span class="attr">class</span>=<span class="string">"`com.bugMaker.demo.util.dataSource.DynamicDataSource`"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"targetDataSources"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">map</span> <span class="attr">key-type</span>=<span class="string">"java.lang.String"</span>&gt;</span></span><br><span class="line">			<span class="comment">&lt;!-- 指定lookupKey和与之对应的数据源 --&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">entry</span> <span class="attr">key</span>=<span class="string">"oracle"</span> <span class="attr">value-ref</span>=<span class="string">"`dataSource1`"</span>&gt;</span><span class="tag">&lt;/<span class="name">entry</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">entry</span> <span class="attr">key</span>=<span class="string">"mysql"</span> <span class="attr">value-ref</span>=<span class="string">"`dataSource2`"</span>&gt;</span><span class="tag">&lt;/<span class="name">entry</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">map</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 指定默认的数据源 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"defaultTargetDataSource"</span> <span class="attr">ref</span>=<span class="string">"`dataSource1`"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 通过IOC管理sqlSessionFactory --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlSessionFactory"</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.SqlSessionFactoryBean"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 加载mybatis的总控制文件 --&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- &lt;property name="configLocation" value="`classpath:mapper/sqlMapConfig.xml`"&gt;&lt;/property&gt; --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"mapperLocations"</span> <span class="attr">value</span>=<span class="string">"`classpath:com/bugMaker/demo/mapping/*.xml`"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>注意:(b)中”指定lookupKey和与之对应的数据源”中entry节点key值(“mysql”与”oracle”,key的值为任意,但需要与datasource注解值对应)为datasource注解的value,步骤3将会说到创建和使用datasource注解</p>
+<p>(3)创建切换数据源需要的工具类<br>a. 创建注解datasource类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*@Retention(RetentionPolicy.RUNTIME)  </span></span><br><span class="line"><span class="comment">@Target(ElementType.METHOD)*/</span></span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE,ElementType.METHOD&#125;)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> DataSource &#123;  </span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span></span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> b. 创建切面拦截处理类<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceAspect</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 拦截目标方法，获取由<span class="doctag">@DataSource</span>指定的数据源标识，设置到线程存储中以便切换数据源</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> point</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">intercept</span><span class="params">(JoinPoint point)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Class&lt;?&gt; target = point.getTarget().getClass();</span><br><span class="line">        MethodSignature signature = (MethodSignature) point.getSignature();</span><br><span class="line">        <span class="comment">// 默认使用目标类型的注解，如果没有则使用其实现接口的注解</span></span><br><span class="line">        <span class="keyword">for</span> (Class&lt;?&gt; clazz : target.getInterfaces()) &#123;</span><br><span class="line">            resolveDataSource(clazz, signature.getMethod());</span><br><span class="line">        &#125;</span><br><span class="line">        resolveDataSource(target, signature.getMethod());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提取目标对象方法注解和类型注解中的数据源标识</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> clazz</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> method</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">resolveDataSource</span><span class="params">(Class&lt;?&gt; clazz, Method method)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Class&lt;?&gt;[] types = method.getParameterTypes();</span><br><span class="line">            <span class="comment">// 默认使用类型注解</span></span><br><span class="line">            <span class="keyword">if</span> (clazz.isAnnotationPresent(DataSource.class)) &#123;</span><br><span class="line">                DataSource source = clazz.getAnnotation(DataSource.class);</span><br><span class="line">                DynamicDataSourceHolder.setDataSource(source.value());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 方法注解可以覆盖类型注解</span></span><br><span class="line">            Method m = clazz.getMethod(method.getName(), types);</span><br><span class="line">            <span class="keyword">if</span> (m != <span class="keyword">null</span> &amp;&amp; m.isAnnotationPresent(DataSource.class)) &#123;</span><br><span class="line">                DataSource source = m.getAnnotation(DataSource.class);</span><br><span class="line">                DynamicDataSourceHolder.setDataSource(source.value());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(clazz + <span class="string">":"</span> + e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> c. 创建标记数据源常量<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">* <span class="doctag">@date</span> 	2018年5月17日 上午9:13:59 </span></span><br><span class="line"><span class="comment">* 数据源类型常量</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceConstant</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ORACLE=<span class="string">"oracle"</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String MYSQL=<span class="string">"mysql"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>d. 创建DynamicDataSourceHolder类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicDataSourceHolder</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 注意：数据源标识保存在线程变量中，避免多线程操作数据源时互相干扰</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; THREAD_DATA_SOURCE = <span class="keyword">new</span> ThreadLocal&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getDataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> THREAD_DATA_SOURCE.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setDataSource</span><span class="params">(String dataSource)</span> </span>&#123;</span><br><span class="line">        THREAD_DATA_SOURCE.set(dataSource);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">clearDataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        THREAD_DATA_SOURCE.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> e. 创建DynamicDataSource类(在步骤b的”spring与mybatis管理数据源”中需要用到)<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicDataSource</span> <span class="keyword">extends</span> <span class="title">AbstractRoutingDataSource</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Object <span class="title">determineCurrentLookupKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 从自定义的位置获取数据源标识</span></span><br><span class="line">        <span class="keyword">return</span> DynamicDataSourceHolder.getDataSource();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>(4)及配置切面拦截<br>在spring中配置文件中添加切面配置<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">aop:aspectj-autoproxy</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:aspectj-autoproxy</span>&gt;</span>  </span><br><span class="line">	<span class="comment">&lt;!-- 设置拦截处理类 --&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dataSourceAspect"</span> <span class="attr">class</span>=<span class="string">"com.bugMaker.demo.util.dataSource.DataSourceAspect"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">aop:aspect</span> <span class="attr">ref</span>=<span class="string">"dataSourceAspect"</span> &gt;</span></span><br><span class="line">            	<span class="comment">&lt;!--拦截所有dao方法 </span></span><br><span class="line"><span class="comment">            		在dao层加的注解，下面的expression的值要对应dao层;</span></span><br><span class="line"><span class="comment">            	--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"dataSourcePointcut"</span> </span></span><br><span class="line"><span class="tag">            	<span class="attr">expression</span>=<span class="string">"execution(* com.bugMaker.demo.dao.*.*(..))"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:before</span> <span class="attr">pointcut-ref</span>=<span class="string">"dataSourcePointcut"</span> <span class="attr">method</span>=<span class="string">"intercept"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">aop:aspect</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="四、演示："><a href="#四、演示：" class="headerlink" title="四、演示："></a>四、演示：</h1><p>dao层代码，因为是使用多个数据源，我在这里写两个dao层类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="meta">@DataSource</span>(value=DataSourceConstant.MYSQL)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CarMapper</span> </span>&#123;</span><br><span class="line">    <span class="function">Car <span class="title">selectByPrimaryKey</span><span class="params">(String license)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">List&lt;Car&gt; <span class="title">selectAll</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function">List&lt;Car&gt; <span class="title">selectByParam</span><span class="params">(Car car)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="meta">@DataSource</span>(value=DataSourceConstant.ORACLE)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PmCmContractMapper</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">deleteByPrimaryKey</span><span class="params">(String pkCont)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">insert</span><span class="params">(PmCmContract record)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">PmCmContract <span class="title">selectByPrimaryKey</span><span class="params">(String pkCont)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">List&lt;PmCmContract&gt; <span class="title">selectAll</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>单元测试<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="meta">@ContextConfiguration</span>(locations = <span class="string">"classpath:application-context.xml"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PmCmProdapprBServiceTest</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span>  PmCmProdapprBService service;</span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> CarService service2;</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSelectAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		List&lt;PmCmProdapprB&gt; result = service.selectAll();</span><br><span class="line">		Iterator&lt;PmCmProdapprB&gt; it=result.iterator();</span><br><span class="line">		<span class="keyword">while</span>(it.hasNext())&#123;</span><br><span class="line">			 PmCmProdapprB element = it.next();</span><br><span class="line">			 System.out.println(element);</span><br><span class="line">			 assertTrue((element!=<span class="keyword">null</span>));</span><br><span class="line">		&#125;</span><br><span class="line">		List&lt;Car&gt; result2=service2.selectAll();</span><br><span class="line">		Iterator&lt;Car&gt; it2=result2.iterator();</span><br><span class="line">		<span class="keyword">while</span>(it2.hasNext())&#123;</span><br><span class="line">			Car car = it2.next();</span><br><span class="line">			System.out.println(car);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>controller层代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/test"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestController</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span>  PmCmProdapprBService service;</span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> CarService service2;</span><br><span class="line">	<span class="meta">@RequestMapping</span>(<span class="string">"/show.do"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">try</span>&#123;</span><br><span class="line">			List&lt;PmCmProdapprB&gt; result = service.selectAll();</span><br><span class="line">			Iterator&lt;PmCmProdapprB&gt; it=result.iterator();</span><br><span class="line">			<span class="keyword">while</span>(it.hasNext())&#123;</span><br><span class="line">				 PmCmProdapprB element = it.next();</span><br><span class="line">				 System.out.println(element);</span><br><span class="line">			&#125;</span><br><span class="line">			List&lt;Car&gt; result2=service2.selectAll();</span><br><span class="line">			Iterator&lt;Car&gt; it2=result2.iterator();</span><br><span class="line">			<span class="keyword">while</span>(it2.hasNext())&#123;</span><br><span class="line">				Car car = it2.next();</span><br><span class="line">				System.out.println(car);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+        </div>
+      </article>
+    </div>
+    <!-- Pre or Next -->
+    
+	<div class="container" >
+           <ul class="pager">
+    	     
+      	     <li class="previous">
+              <a href="/2018/05/29/blog2/" rel="prev">下一篇</a>
+             </li>
+           
+           
+          </ul>
+       </div>
+　　　　<!-- Comments -->
+    <div class="container">
+      
+<section id="comment">
+  <!-- <h1 class="title">留言</h1> -->
+
+  
+</section>
+
+
+    </div>
+   
+　　　　
+  </div>
+</div>
+
+
+  <!-- Footer -->
+  <!-- Footer -->
+<footer class="site-info">
+  <p>
+    <span>Bug Maker' Blog &copy; 2018 - 2018</span>
+  </p>
+  <p>
+	 
+      <span>Powered by <a href="https://hexo.io/">Hexo</a> with Theme believe</span>
+    
+  </p>
+  <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  <!-- 本站访客数<span id="busuanzi_value_site_uv"></span>人次 -->
+</footer>
+
+
+  <!-- After footer scripts -->
+  <!-- scripts -->
+<script src="/js/app.js"></script>
+
+
+
+</body>
+
+</html>

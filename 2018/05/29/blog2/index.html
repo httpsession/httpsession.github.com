@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!--Description-->
+  
+  <meta name="description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、">
+  
+
+  <!--Author-->
+  
+  <meta name="author" content="longjie">
+  
+
+  <!--Open Graph Title-->
+  
+      <meta property="og:title" content="Spring数据库操作事务控制"/>
+  
+  <!--Open Graph Description-->
+  
+      <meta property="og:description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、" />
+  
+  <!--Open Graph Site Name-->
+  <meta property="og:site_name" content="Bug Maker&#39; Blog"/>
+  <!--Type page-->
+  
+      <meta property="og:type" content="article" />
+  
+  <!--Page Cover-->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- 百度统计 -->
+    <script>
+	var _hmt = _hmt || [];
+	(function() {
+  	var hm = document.createElement("script");
+  	hm.src = "https://hm.baidu.com/hm.js?c0451e16533956173997b85f7a8de666";
+  	var s = document.getElementsByTagName("script")[0]; 
+  	s.parentNode.insertBefore(hm, s);
+	})();
+    </script>
+  <!-- Title -->
+  
+  <title>Spring数据库操作事务控制 - Bug Maker&#39; Blog</title>
+
+
+  <link rel="shortcut icon" href="/images/logo.ico">
+    <!--font-awesome-->
+  <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Custom CSS/Sass -->
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <header class="site-header">
+  <div class="header-inside">
+    
+    <div class="logo">
+      <a href="/" rel="home">
+        
+        <img src="http://pa3mctxwu.bkt.clouddn.com/ico.jpg" alt="Bug Maker' Blog" height="60">
+        
+      </a>
+    </div>
+    <a class="header-name" href="/">
+          <span>Bug Maker' Blog</span>
+        </a>
+    <!-- navbar -->
+    <nav class="navbar">
+      <!--  nav links -->
+      <div class="collapse">
+        <ul class="navbar-nav">
+          
+          
+            <li>
+              <a href="/.">
+                
+                  <i class="fa fa-home "></i>
+                
+                首页
+              </a>
+            </li>
+          
+            <li>
+              <a href="/archives">
+                
+                  <i class="fa fa-archive "></i>
+                
+                归档
+              </a>
+            </li>
+          
+            <li>
+              <a href="/about">
+                
+                  <i class="fa fa-user "></i>
+                
+                关于
+              </a>
+            </li>
+          
+            <li>
+              <a href="/project">
+                
+                  <i class="fa fa-folder-open "></i>
+                
+                项目
+              </a>
+            </li>
+          
+            <li>
+              <a href="/photo">
+                
+                  <i class="fa fa-photo "></i>
+                
+                相册
+              </a>
+            </li>
+          
+            <li>
+              <a href="/guestbook">
+                
+                  <i class="fa fa-edit "></i>
+                
+                留言
+              </a>
+            </li>
+          
+            <li>
+              <a href="/atom.xml">
+                
+                  <i class="fa fa-send "></i>
+                
+                RSS
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+    <div class="button-wrap">
+      <button class="menu-toggle">Primary Menu</button>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="content-area">
+  <div class="post">
+    <!-- Post Content -->
+    <div class="container">
+      <article>
+        <!-- Title date & tags -->
+        <div class="post-header">
+          <h1 class="entry-title">
+            Spring数据库操作事务控制
+            
+          </h1>
+         
+        </div>
+		 <p class="a-posted-on">
+			Bug Maker
+         </p>
+         <p class="a-posted-on">
+			2018-05-29
+         </p>
+        <!-- Post Main Content -->
+        <div class="entry-content">
+          <p><img src="http://pa3mctxwu.bkt.clouddn.com/sangshen.jpg" alt="Markdown"><br><a id="more"></a></p>
+<h1 id="一、导读"><a href="#一、导读" class="headerlink" title="一、导读"></a>一、导读</h1><p>今天来聊一下数据库事务，这个大家并不陌生。很多业务场景都需要用到事务，烂大街的例子无非就是转账操作，我今天我也以该例子进行讲解。转账过程中,对收款方和付款方操作必须是一个原子操作,任何一个环节出现异常,都需要进行事务回滚,下文我讲解两种spring数据库操作事务控制方式：  </p>
+<ul>
+<li>使用spring事务控制模板</li>
+<li>使用spring aop进行事务控制</li>
+</ul>
+<h1 id="二、讲解目录"><a href="#二、讲解目录" class="headerlink" title="二、讲解目录"></a>二、讲解目录</h1><ul>
+<li>使用spring事务控制模板<br><strong> 事务控制模板配置
+</strong> 编写dao层<br><strong> 编写service层
+</strong> 测试</li>
+<li>使用spring aop进行事务控制<br><strong> aop配置
+</strong> 编写dao层<br><strong> 编写service层
+</strong> 测试</li>
+</ul>
+<h1 id="三、讲解"><a href="#三、讲解" class="headerlink" title="三、讲解"></a>三、讲解</h1><h3 id="方式1、使用spring事务控制模板"><a href="#方式1、使用spring事务控制模板" class="headerlink" title="方式1、使用spring事务控制模板"></a>方式1、使用spring事务控制模板</h3><p>(1) 在spring主配置文件(applicationContext.xml)中对事务控制模板进行注入配置<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 事务控制模板 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"transactionTemplate"</span> <span class="attr">class</span>=<span class="string">"org.springframework.transaction.support.TransactionTemplate"</span>&gt;</span> </span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"transactionManager"</span> <span class="attr">ref</span>=<span class="string">"txManager"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span> </span><br><span class="line"><span class="comment">&lt;!-- 事务控制模板 --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 数据库事务管理 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"txManager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 数据库事务管理 --&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>(2) 编写dao层<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repository</span>  <span class="comment">/*直接使用注解进行bean注入*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Autowired</span> <span class="comment">/*直接使用注解进行自动装配*/</span></span><br><span class="line">	<span class="keyword">private</span> JdbcTemplate jdbcTemplate;<span class="comment">//jdbc模板</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addUser</span><span class="params">(User user)</span></span>&#123;<span class="comment">//添加用户</span></span><br><span class="line">		jdbcTemplate.update(<span class="string">"insert into user(name,password) values(?,?)"</span>,user.getName(),user.getPassword());</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addMoney</span><span class="params">(String id,<span class="keyword">double</span> money)</span></span>&#123;<span class="comment">//给账户增加指定金额</span></span><br><span class="line">		jdbcTemplate.update(<span class="string">"UPDATE user SET money = money + ? WHERE name = ?"</span>,money,id);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deductMoney</span><span class="params">(String id,<span class="keyword">double</span> money)</span></span>&#123;<span class="comment">//给账户减少指定金额</span></span><br><span class="line">		jdbcTemplate.update(<span class="string">"UPDATE user SET money = money - ? WHERE name = ?"</span>,money,id);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>(3) 编写service层<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span><span class="comment">/*注解进行bean注入*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Autowired</span><span class="comment">/*直接使用注解进行自动装配*/</span></span><br><span class="line">	TransactionTemplate transactionTemplate;<span class="comment">/*事务管理模板*/</span>		</span><br><span class="line">	<span class="meta">@Autowired</span><span class="comment">/*直接使用注解进行自动装配*/</span></span><br><span class="line">	UserDao userDao;<span class="comment">/*user Dao层*/</span></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	* 转账交易</span></span><br><span class="line"><span class="comment">	* <span class="doctag">@param</span> inner 收款方</span></span><br><span class="line"><span class="comment">	* <span class="doctag">@param</span> outter 付款方</span></span><br><span class="line"><span class="comment">	* <span class="doctag">@param</span> money 交易金额</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transfer</span><span class="params">(<span class="keyword">final</span> String inner,<span class="keyword">final</span> String outter,<span class="keyword">final</span> <span class="keyword">double</span> money)</span></span>&#123;</span><br><span class="line">		<span class="comment">/*执行事务*/</span></span><br><span class="line">		transactionTemplate.execute(<span class="keyword">new</span> TransactionCallbackWithoutResult() &#123;<span class="comment">/*匿名内部类*/</span></span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doInTransactionWithoutResult</span><span class="params">(TransactionStatus status)</span> </span>&#123;</span><br><span class="line">				userDao.deductMoney(outter, money);</span><br><span class="line">      			<span class="comment">///System.out.println(1/0);尝试抛出异常,查看是否成功开启事务处理</span></span><br><span class="line">				userDao.addMoney(inner, money);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>(4) 测试<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		ApplicationContext context = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">"spring/applicationContext.xml"</span>);</span><br><span class="line">		UserService userService= (UserService) context.getBean(<span class="string">"userService"</span>);</span><br><span class="line">		userService.transfer(<span class="string">"dragonjack"</span>, <span class="string">"ddd"</span>, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="方式2、使用spring-aop进行事务控制"><a href="#方式2、使用spring-aop进行事务控制" class="headerlink" title="方式2、使用spring aop进行事务控制"></a>方式2、使用spring aop进行事务控制</h3><p>(1) 在spring主配置文件(applicationContext.xml)中对AOP进行配置<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 数据库事务管理 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"transactionManager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 数据库事务管理 --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--  配置事务传播特性 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">"txAdvice"</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- 要开启事务的方法 --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"transfer"</span> <span class="attr">propagation</span>=<span class="string">"REQUIRED"</span> <span class="attr">isolation</span>=<span class="string">"DEFAULT"</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"insert*"</span> <span class="attr">propagation</span>=<span class="string">"REQUIRED"</span> <span class="attr">isolation</span>=<span class="string">"DEFAULT"</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--  配置事务传播特性 --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--  配置参与事务的类 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">advice-ref</span>=<span class="string">"txAdvice"</span> <span class="attr">pointcut</span>=<span class="string">"execution(* cn.dragonjack.springjdbc.service.*.*(..))"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--  配置参与事务的类 --&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>(2) 编写dao层<br>dao层与上一个方法一样,这里不再赘述.<br>(3) 编写service层<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional</span>(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED)</span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> <span class="keyword">implements</span> <span class="title">IUserService</span></span>&#123;</span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	UserDao userDao;<span class="comment">//user Dao层</span></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	转账操作</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transfer</span><span class="params">(<span class="keyword">final</span> String inner, <span class="keyword">final</span> String outter, <span class="keyword">final</span> <span class="keyword">double</span> money)</span> </span>&#123;</span><br><span class="line">		userDao.deductMoney(outter, money);</span><br><span class="line">		<span class="comment">//System.out.println(1/0);</span></span><br><span class="line">		userDao.addMoney(inner, money);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>(4) 测试<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	ApplicationContext context = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">"spring/applicationContext.xml"</span>);</span><br><span class="line">	IUserService userService= (IUserService) context.getBean(<span class="string">"userService"</span>);</span><br><span class="line">	userService.transfer(<span class="string">"dragonjack"</span>, <span class="string">"ddd"</span>, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+        </div>
+      </article>
+    </div>
+    <!-- Pre or Next -->
+    
+	<div class="container" >
+           <ul class="pager">
+    	     
+      	     <li class="previous">
+              <a href="/2018/06/10/blog3/" rel="prev">下一篇</a>
+             </li>
+           
+           
+              <li class="next">
+              <a href="/2018/05/26/blog1/" rel="prev">上一篇</a>
+            </li>
+           
+          </ul>
+       </div>
+　　　　<!-- Comments -->
+    <div class="container">
+      
+<section id="comment">
+  <!-- <h1 class="title">留言</h1> -->
+
+  
+</section>
+
+
+    </div>
+   
+　　　　
+  </div>
+</div>
+
+
+  <!-- Footer -->
+  <!-- Footer -->
+<footer class="site-info">
+  <p>
+    <span>Bug Maker' Blog &copy; 2018 - 2018</span>
+  </p>
+  <p>
+	 
+      <span>Powered by <a href="https://hexo.io/">Hexo</a> with Theme believe</span>
+    
+  </p>
+  <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  <!-- 本站访客数<span id="busuanzi_value_site_uv"></span>人次 -->
+</footer>
+
+
+  <!-- After footer scripts -->
+  <!-- scripts -->
+<script src="/js/app.js"></script>
+
+
+
+</body>
+
+</html>

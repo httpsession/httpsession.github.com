@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!--Description-->
+  
+  <meta name="description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、">
+  
+
+  <!--Author-->
+  
+  <meta name="author" content="longjie">
+  
+
+  <!--Open Graph Title-->
+  
+      <meta property="og:title" content="Spring事务与锁的正确使用姿势(上)"/>
+  
+  <!--Open Graph Description-->
+  
+      <meta property="og:description" content="个人博客、blog、日记、daily、杂记、mysql、oracle、java、python、spring、springmvc、quartz、jvm、" />
+  
+  <!--Open Graph Site Name-->
+  <meta property="og:site_name" content="Bug Maker&#39; Blog"/>
+  <!--Type page-->
+  
+      <meta property="og:type" content="article" />
+  
+  <!--Page Cover-->
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- 百度统计 -->
+    <script>
+	var _hmt = _hmt || [];
+	(function() {
+  	var hm = document.createElement("script");
+  	hm.src = "https://hm.baidu.com/hm.js?c0451e16533956173997b85f7a8de666";
+  	var s = document.getElementsByTagName("script")[0]; 
+  	s.parentNode.insertBefore(hm, s);
+	})();
+    </script>
+  <!-- Title -->
+  
+  <title>Spring事务与锁的正确使用姿势(上) - Bug Maker&#39; Blog</title>
+
+
+  <link rel="shortcut icon" href="/images/logo.ico">
+    <!--font-awesome-->
+  <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Custom CSS/Sass -->
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <header class="site-header">
+  <div class="header-inside">
+    
+    <div class="logo">
+      <a href="/" rel="home">
+        
+        <img src="http://pa3mctxwu.bkt.clouddn.com/ico.jpg" alt="Bug Maker' Blog" height="60">
+        
+      </a>
+    </div>
+    <a class="header-name" href="/">
+          <span>Bug Maker' Blog</span>
+        </a>
+    <!-- navbar -->
+    <nav class="navbar">
+      <!--  nav links -->
+      <div class="collapse">
+        <ul class="navbar-nav">
+          
+          
+            <li>
+              <a href="/.">
+                
+                  <i class="fa fa-home "></i>
+                
+                首页
+              </a>
+            </li>
+          
+            <li>
+              <a href="/archives">
+                
+                  <i class="fa fa-archive "></i>
+                
+                归档
+              </a>
+            </li>
+          
+            <li>
+              <a href="/about">
+                
+                  <i class="fa fa-user "></i>
+                
+                关于
+              </a>
+            </li>
+          
+            <li>
+              <a href="/project">
+                
+                  <i class="fa fa-folder-open "></i>
+                
+                项目
+              </a>
+            </li>
+          
+            <li>
+              <a href="/photo">
+                
+                  <i class="fa fa-photo "></i>
+                
+                相册
+              </a>
+            </li>
+          
+            <li>
+              <a href="/guestbook">
+                
+                  <i class="fa fa-edit "></i>
+                
+                留言
+              </a>
+            </li>
+          
+            <li>
+              <a href="/atom.xml">
+                
+                  <i class="fa fa-send "></i>
+                
+                RSS
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+    <div class="button-wrap">
+      <button class="menu-toggle">Primary Menu</button>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="content-area">
+  <div class="post">
+    <!-- Post Content -->
+    <div class="container">
+      <article>
+        <!-- Title date & tags -->
+        <div class="post-header">
+          <h1 class="entry-title">
+            Spring事务与锁的正确使用姿势(上)
+            
+          </h1>
+         
+        </div>
+		 <p class="a-posted-on">
+			Bug Maker
+         </p>
+         <p class="a-posted-on">
+			2018-06-10
+         </p>
+        <!-- Post Main Content -->
+        <div class="entry-content">
+          <p><img src="http://pa3mctxwu.bkt.clouddn.com/cat.jpg" alt="Markdown"><br><a id="more"></a><br>最近学习spring<strong>事务</strong>的时候,自己弄了一个demo项目,其涉及到<strong>并发</strong>方面的知识,在线程同步的时候使用<strong><strong>Lock</strong></strong>(在并发小的情况下可以采用synchronized,关于synchronized与lock的详解,<a href="https://blog.csdn.net/u012403290/article/details/64910926?locationNum=11&amp;fps=1" target="_blank" rel="noopener"><strong>推荐一篇博文</strong></a>),测试期间出现了了问题.该demo模拟抢购场景,在每次测试的时候都会出现卖多的情况,例如商品只有1000件,会出现销售超过1000件的情况。  </p>
+<p>由于spring的bean<strong>默认是单例</strong>的(此项目的bean配置是默认配置),所以,可以保证下面代码中的lock是单例的.<br><strong>代码如下</strong>:  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShopingServiceImpl</span> <span class="keyword">implements</span> <span class="title">ShopingService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Lock lock = <span class="keyword">new</span> ReentrantLock(<span class="keyword">true</span>);<span class="comment">//互斥锁 参数默认false，不公平锁</span></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> ShoppingDao dao;</span><br><span class="line">	    </span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="meta">@Transactional</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Result  <span class="title">shopping</span><span class="params">(String goodId, String userId)</span> </span>&#123;</span><br><span class="line">	    <span class="keyword">try</span> &#123;</span><br><span class="line">	        lock.lock();</span><br><span class="line">	        <span class="keyword">int</span> num=dao.selectNumber(goodId);</span><br><span class="line">	        <span class="keyword">if</span>(num&gt;<span class="number">0</span>)&#123;<span class="comment">//当前商品还有库存</span></span><br><span class="line">	            dao.setNumber(num-<span class="number">1</span>);</span><br><span class="line">	        &#125;<span class="keyword">else</span>&#123;<span class="comment">//当前商品没有库存</span></span><br><span class="line">	           <span class="keyword">return</span> Result.unsuccess(<span class="string">"商品已经被抢购完了"</span>);</span><br><span class="line">	        &#125;</span><br><span class="line">	    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">	        e.printStackTrace();</span><br><span class="line">	    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">	        lock.unlock();</span><br><span class="line">	    &#125;</span><br><span class="line">	    <span class="keyword">return</span> Result.success(<span class="string">"抢购成功"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>后来终于发现出现问题的原因，在代码中，事务是通过<strong>注解</strong>的形式实现，而lock在方法里面就已经释放，<strong>即可能出现锁已经释放而事务还未提交的情况</strong>。按照正常操作来说，应该由锁来包住事务，而不应在事务中加锁。为了让锁包住事务，我采取另一种方案，<strong>==使用切面处理锁==</strong></p>
+<h4 id="使用AOP"><a href="#使用AOP" class="headerlink" title="使用AOP"></a>使用AOP</h4><p>(1)创建锁注解<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE,ElementType.METHOD&#125;)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ShoppingLock &#123;</span><br><span class="line">	<span class="function">String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>(2)声明切面<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShoppingAspect</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Lock lock = <span class="keyword">new</span> ReentrantLock(<span class="keyword">true</span>);<span class="comment">//互斥锁</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * 声明切点,表示切点为ShoppingLock注解的代码</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Pointcut</span>(<span class="string">"@annotation(com.bugmaker.shopping.ShoppingLock)"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ShoppingAspect</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Around</span>(<span class="string">"ShoppingAspect()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span>  Object <span class="title">around</span><span class="params">(ProceedingJoinPoint joinPoint)</span> </span>&#123; </span><br><span class="line">        lock.lock();<span class="comment">//加锁</span></span><br><span class="line">        Object obj = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            obj = joinPoint.proceed();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">            lock.unlock();<span class="comment">//释放锁</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> obj;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>(3)service代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShopingServiceImpl</span> <span class="keyword">implements</span> <span class="title">ShopingService</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> ShoppingDao dao;</span><br><span class="line">	    </span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="meta">@ShoppingLock</span><span class="comment">//添加注解,注解为切点,切面中添加了锁处理</span></span><br><span class="line">	<span class="meta">@Transactional</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Result  <span class="title">shopping</span><span class="params">(String goodId, String userId)</span> </span>&#123;</span><br><span class="line">	    <span class="keyword">try</span> &#123;</span><br><span class="line">	        <span class="keyword">int</span> num=dao.selectNumber(goodId);</span><br><span class="line">	        <span class="keyword">if</span>(num&gt;<span class="number">0</span>)&#123;<span class="comment">//当前商品还有库存</span></span><br><span class="line">	            dao.setNumber(num-<span class="number">1</span>);</span><br><span class="line">	            <span class="keyword">return</span> Result.success(<span class="string">"抢购成功"</span>);</span><br><span class="line">	        &#125;<span class="keyword">else</span>&#123;<span class="comment">//当前商品没有库存</span></span><br><span class="line">	           <span class="keyword">return</span> Result.unsuccess(<span class="string">"商品已经被抢购完了"</span>);</span><br><span class="line">	        &#125;</span><br><span class="line">	    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">	        e.printStackTrace();</span><br><span class="line">	    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="这样就大功告成了-事情好像没那么简单"><a href="#这样就大功告成了-事情好像没那么简单" class="headerlink" title="这样就大功告成了?事情好像没那么简单!"></a>这样就大功告成了?事情好像没那么简单!</h4><p>ShoppingLock与Transactional的作用范围跟其注解添加的顺序有没有关系呢?   </p>
+<h5 id="欲知后事-请听下集揭晓。"><a href="#欲知后事-请听下集揭晓。" class="headerlink" title="欲知后事,请听下集揭晓。"></a>欲知后事,请听下集揭晓。</h5>
+        </div>
+      </article>
+    </div>
+    <!-- Pre or Next -->
+    
+	<div class="container" >
+           <ul class="pager">
+    	     
+      	     <li class="previous">
+              <a href="/2018/06/11/blog4/" rel="prev">下一篇</a>
+             </li>
+           
+           
+              <li class="next">
+              <a href="/2018/05/29/blog2/" rel="prev">上一篇</a>
+            </li>
+           
+          </ul>
+       </div>
+　　　　<!-- Comments -->
+    <div class="container">
+      
+<section id="comment">
+  <!-- <h1 class="title">留言</h1> -->
+
+  
+</section>
+
+
+    </div>
+   
+　　　　
+  </div>
+</div>
+
+
+  <!-- Footer -->
+  <!-- Footer -->
+<footer class="site-info">
+  <p>
+    <span>Bug Maker' Blog &copy; 2018 - 2018</span>
+  </p>
+  <p>
+	 
+      <span>Powered by <a href="https://hexo.io/">Hexo</a> with Theme believe</span>
+    
+  </p>
+  <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  <!-- 本站访客数<span id="busuanzi_value_site_uv"></span>人次 -->
+</footer>
+
+
+  <!-- After footer scripts -->
+  <!-- scripts -->
+<script src="/js/app.js"></script>
+
+
+
+</body>
+
+</html>
